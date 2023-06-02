@@ -1,0 +1,55 @@
+@font-face {
+  font-family: Pixel;
+  src: url('/assets/pixel-font.ttf');
+}
+
+body {
+  background: #121414;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #121414;
+  font-family: Pixel, sans-serif, monospace;
+  font-size: 0.75rem;
+}
+
+input,
+button,
+input::before {
+  height: 2rem;
+  width: 20%;
+  border: none;
+  border-radius: 5px;
+  background-color: #9fb5a3;
+  font-family: Pixel, sans-serif, monospace;
+}
+
+.hidden {
+  display: none;
+}
+
+label {
+  color: #823e2a;
+}
+
+input {
+  text-align: center;
+}
+
+::placeholder {
+  opacity: 1;
+  color: #434a45;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
+
+img {
+  image-rendering: pixelated;
+  width: 30%;
+  background-image: radial-gradient(#291d17, transparent 75%);
+}

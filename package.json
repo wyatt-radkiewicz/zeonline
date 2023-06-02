@@ -1,0 +1,19 @@
+{
+  "name": "zeonline",
+  "version": "1.0.0",
+  "description": "Zombie Escape for the web browser",
+  "main": "index.js",
+  "author": "eklipsed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "4",
+    "socket.io": "^4.6.2"
+  },
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
