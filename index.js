@@ -24,8 +24,8 @@ app.get('/common.js', (req, res) => {
 });
 app.use(express.static('client'));
 app.use('/assets', express.static('assets'));
-server.listen(3000, () => {
-  console.log('listening on port 3000.');
+server.listen(80, () => {
+  console.log('listening on port 80.');
 }); 
 
 // game globals
