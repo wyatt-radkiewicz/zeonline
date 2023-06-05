@@ -13,9 +13,19 @@
          "id":0,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
                  "value":0
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"liquid",
@@ -31,20 +41,25 @@
                  "name":"void",
                  "type":"bool",
                  "value":true
-                }, 
-                {
-                 "name":"wall",
-                 "type":"bool",
-                 "value":false
                 }]
         }, 
         {
          "id":1,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
                  "value":0
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"liquid",
@@ -58,11 +73,6 @@
                 }, 
                 {
                  "name":"void",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"wall",
                  "type":"bool",
                  "value":false
                 }]
@@ -71,9 +81,19 @@
          "id":2,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
                  "value":0
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"liquid",
@@ -87,11 +107,6 @@
                 }, 
                 {
                  "name":"void",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"wall",
                  "type":"bool",
                  "value":false
                 }]
@@ -100,9 +115,19 @@
          "id":3,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
                  "value":0
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"liquid",
@@ -116,11 +141,6 @@
                 }, 
                 {
                  "name":"void",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"wall",
                  "type":"bool",
                  "value":false
                 }]
@@ -129,9 +149,19 @@
          "id":4,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
-                 "value":50
+                 "value":0
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":true
                 }, 
                 {
                  "name":"liquid",
@@ -145,11 +175,6 @@
                 }, 
                 {
                  "name":"void",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"wall",
                  "type":"bool",
                  "value":false
                 }]
@@ -158,9 +183,19 @@
          "id":5,
          "properties":[
                 {
-                 "name":"dmg_per_sec",
+                 "name":"barrier_fall_id",
                  "type":"int",
-                 "value":0
+                 "value":2
+                }, 
+                {
+                 "name":"is_barrier",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"kills",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"liquid",
@@ -170,17 +205,12 @@
                 {
                  "name":"solid",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"void",
                  "type":"bool",
                  "value":false
-                }, 
-                {
-                 "name":"wall",
-                 "type":"bool",
-                 "value":true
                 }]
         }],
  "tilewidth":16,
