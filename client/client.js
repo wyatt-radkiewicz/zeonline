@@ -12,7 +12,7 @@ var bulletFx = [];
 var bulletCooldown = 0;
 var lastTick = performance.now();
 var lastUpdate = performance.now();
-var keys = { left: false, right: false, down: false, up: false, fire: false, space: false };
+var keys = { left: false, right: false, down: false, up: false, fire: false, space: false, reload: false };
 var mousex = 0, mousey = 0;
 var deltaTime = 0;
 var gameTime = 0;
@@ -74,16 +74,20 @@ screenResize();
 var sounds = {};
 var loopingSounds = {};
 const audioCtx = new AudioContext();
-var playSound = (name, loop, gain) => {
+const musicGain = audioCtx.createGain();
+musicGain.gain.value = 0.3;
+const soundGain = audioCtx.createGain();
+soundGain.gain.value = 0.9;
+var playSound = (name, loop, isMusic) => {
   if (!sounds[name]) return;
   const trackSource = audioCtx.createBufferSource();
   trackSource.buffer = sounds[name];
-  if (gain) {
-    let gainNode = audioCtx.createGain();
-    gainNode.gain.value = gain;
-    trackSource.connect(gainNode).connect(audioCtx.destination);
+  if (isMusic) {
+    trackSource.connect(musicGain);
+    musicGain.connect(audioCtx.destination);
   } else {
-    trackSource.connect(audioCtx.destination);
+    trackSource.connect(soundGain);
+    soundGain.connect(audioCtx.destination);
   }
   trackSource.start();
   if (loop) {
@@ -135,8 +139,10 @@ async function loadImage(name, url, fw, fh) {
   loadImage("explosion", "/assets/explosion.png", 64, 64);
 
   loadSound('ak47', '/assets/ak47.mp3');
+  loadSound('akreload', '/assets/akreload.mp3');
   loadSound('m3', '/assets/m3.mp3');
   loadSound('m249', '/assets/m249.mp3');
+  loadSound('m249reload', '/assets/m249reload.mp3');
   loadSound('zombie', '/assets/zombie.mp3');
   loadSound('welcome', '/assets/joinserver.mp3');
   loadSound('perfect', '/assets/perfect.mp3');
@@ -151,17 +157,21 @@ setTimeout(() => playSound('welcome'), 500);
 
 // maps
 var respawnClient = () => {
-  if (players[clientName] && checkpointBounds.length > 0) {
+  if (!players[clientName]) return;
+  if (checkpointBounds.length > 0) {
     players[clientName].x = checkpointBounds[0] + Math.random() * checkpointBounds[2];
     players[clientName].y = checkpointBounds[1] + Math.random() * checkpointBounds[3];
-    players[clientName].ammo = gunAmmo[players[clientName].gun];
-    players[clientName].grenade = spawnGrenades;
+  } else {
+    players[clientName].x = -1;
+    players[clientName].y = -1;
   }
+  players[clientName].ammo = gunAmmo[players[clientName].gun];
+  players[clientName].grenade = spawnGrenades;
 };
 socket.on('override_tiles', (array) => {
   overrideTiles = array;
 });
-socket.on('changemap', async function(name) {
+socket.on('changemap', async function(name, maptime) {
   setMapName(name);
   // Load the tile properties
   let res = await fetch('/assets/maps/' + name + '/tiles.tsj');
@@ -178,8 +188,8 @@ socket.on('changemap', async function(name) {
   let musicURL = '/assets/maps/' + name + '/music.mp3';
   stopSound('music');
   if ((await fetch(musicURL)).ok) {
-    loadSound('music', musicURL);
-    setTimeout(() => playSound('music', true, 0.5), 500);
+    await loadSound('music', musicURL);
+    playSound('music', true, true);
   }
   for (const i in getMapObjects().objects) {
     let obj = getMapObjects().objects[i];
@@ -192,7 +202,7 @@ socket.on('changemap', async function(name) {
 
   // Set our position
   respawnClient();
-  mapTimeLeft = MAPTIME;
+  mapTimeLeft = maptime;
   doorTimer = 0;
   boatTimer = 0;
   grenades = [];
@@ -514,7 +524,7 @@ socket.on('grenade', (grenade) => {
   addGrenadeToArray(grenades, grenade);
 });
 socket.on('zombieswin', () => {
-  playSound('humiliation', false, 2);
+  playSound('humiliation', false);
   finishScreenTimer = 5;
   finishHumansWon = false;
 });
@@ -580,6 +590,7 @@ window.addEventListener('keydown', (event) => {
   if (event.key == "ArrowUp" || event.key.toLowerCase() == "w") keys.up = true;
   if (event.key == "ArrowDown" || event.key.toLowerCase() == "s") keys.down = true;
   if (event.key == " ") keys.space = true;
+  if (event.key.toLowerCase() == "r") keys.reload = true;
 }, false);
 window.addEventListener('keyup', (event) => {
   if (event.key == "ArrowRight" || event.key.toLowerCase() == "d") keys.right = false;
@@ -587,6 +598,7 @@ window.addEventListener('keyup', (event) => {
   if (event.key == "ArrowUp" || event.key.toLowerCase() == "w") keys.up = false;
   if (event.key == "ArrowDown" || event.key.toLowerCase() == "s") keys.down = false;
   if (event.key == " ") keys.space = false;
+  if (event.key.toLowerCase() == "r") keys.reload = false;
 }, false);
 window.addEventListener('mousedown', (event) => {
   if (!isChatting) {
@@ -704,6 +716,12 @@ var movePlayer = () => {
   player.anim = Number(keys.right || keys.left || keys.down || keys.up);
   player.reloadCooldown += deltaTime;
   if (!player.zombie) {
+    if (keys.reload && player.ammo > 0) {
+      player.ammo = 0;
+      player.reloadCooldown = 0;
+      if (player.gun == 0) playSound('m249reload');
+      if (player.gun == 1) playSound('akreload');
+    }
     if (keys.space && player.grenade > 0) {
       keys.space = false;
       socket.emit('grenade', clientName);
@@ -724,6 +742,10 @@ var movePlayer = () => {
           spawnBulletFx(player.x+.5, player.y+.5, player.aim-0.1);
           spawnBulletFx(player.x+.5, player.y+.5, player.aim+0.1);
           socket.emit('m3', clientName, M3PUNCH, [player.x, player.y, player.aim]);
+        }
+        if (player.ammo <= 0) {
+          if (player.gun == 0) playSound('m249reload');
+          if (player.gun == 1) playSound('akreload');
         }
       }
     } else {
@@ -751,7 +773,22 @@ var movePlayer = () => {
 };
 var updateFunc = (currTime) => {
   // basic things
+  let drawLoading = () => {
+    ctx.fillStyle = '#444';
+    ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    ctx.fillStyle = '#ddd';
+    ctx.font = '24px Pixel';
+    ctx.textAlign = 'center';
+    ctx.fillText("loading...", canvas.clientWidth / 2, canvas.clientHeight / 2);
+  };
   if (!connected || !isMapLoaded() || !images['tiles']) {
+    drawLoading();
+    window.requestAnimationFrame(updateFunc);
+    return;
+  }
+  if (players[clientName].x < 0 && players[clientName].y < 0) {
+    respawnClient();
+    drawLoading();
     window.requestAnimationFrame(updateFunc);
     return;
   }

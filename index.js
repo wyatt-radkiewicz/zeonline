@@ -24,8 +24,8 @@ app.get('/common.js', (req, res) => {
 });
 app.use(express.static('client'));
 app.use('/assets', express.static('assets'));
-server.listen(80, () => {
-  console.log('listening on port 80.');
+server.listen(3000, () => {
+  console.log('listening on port 3000.');
 }); 
 
 // game globals
@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
       playerIds[name] = socket.id;
       socket.emit('coninfo', players, safeTimer * common.SECS_PER_TICK, spawnGrenades);
       if (activatedDoors.length > 0) socket.emit('override_tiles', common.getMapTileData());
-      socket.emit('changemap', common.getMapName());
+      socket.emit('changemap', common.getMapName(), mapTime * common.SECS_PER_TICK);
       socket.broadcast.emit('newcon', name);
     } else {
       socket.emit('nametaken');
@@ -459,7 +459,7 @@ var updateZombies = () => {
 
     // zombies dieing
     let tileProps = common.getTileProps(zombie.x + 0.5, zombie.y + 0.5);
-    if (tileProps.kills || tileProps.void) {
+    if ((tileProps.kills || tileProps.void) && zombie.boat < 0) {
       [zombie.x, zombie.y] = getSpawnCoord();
     }
   });
@@ -674,7 +674,7 @@ setInterval(() => {
     io.emit('chat', '#f00', "changing map...");
     softReset();
     loadMap(common.getMapName());
-    io.emit('changemap', common.getMapName());
+    io.emit('changemap', common.getMapName(), common.MAPTIME);
   }
   mapTime--;
   let numZombiePlayers = 0, numPlayers = 0;
